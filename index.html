@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JSON Sender</title>
+</head>
+<body>
+    <h1>Send JSON to Backend</h1>
+    <button onclick="sendData()">Send JSON</button>
+
+    <script>
+        function sendData() {
+            const data = {
+                name: "Anshuman",
+                age: 16,
+                project: "Frontend to Backend JSON sharing"
+            };
+
+            fetch('http://127.0.0.1:5000/save-json', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => alert(result.message))
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>
