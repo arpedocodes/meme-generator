@@ -32,7 +32,7 @@ def meme_generator(image_base64,n_meme:int=4):
                     {
                         "type": "image_url",
                         "image_url": {
-                            "url": f"data:image/png;base64,{image_base64}",
+                            "url": image_base64,
                         },
                     }
                 ],

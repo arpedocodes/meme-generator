@@ -152,7 +152,7 @@ export default function YourMemePage() {
             ? // Loading skeletons
               Array.from({ length: 4 }).map((_, i) => (
                 <Card key={i} className="overflow-hidden">
-                  <div className="relative aspect-square w-full">
+                  <div className="relative h-[400px] w-full">
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="w-16 h-16 rounded-full border-4 border-gray-300 border-t-gray-600 animate-spin"></div>
                     </div>
@@ -167,15 +167,17 @@ export default function YourMemePage() {
             : // Actual images
               images.map((image) => (
                 <Card key={image.id} className="overflow-hidden group">
-                  <div className="relative aspect-square w-full cursor-pointer" onClick={() => handleDownload(image)}>
+                  <div
+                    className="relative h-[400px] w-full cursor-pointer flex items-center justify-center bg-gray-50"
+                    onClick={() => handleDownload(image)}
+                  >
                     <img
                       src={image.url || "/placeholder.svg"}
                       alt={image.title}
-                      className="w-full h-full object-cover"
+                      className="max-h-full max-w-full object-contain"
                       onError={(e) => {
                         // Handle image loading errors
                         console.error(`Failed to load image: ${image.url}`)
-                        ;(e.target as HTMLImageElement).src = "/placeholder.svg?height=400&width=400"
                         ;(e.target as HTMLImageElement).alt = "Failed to load image"
                       }}
                     />

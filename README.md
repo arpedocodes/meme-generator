@@ -1,1 +1,1 @@
-Hey future anshuman! I completed the task of connecting the frontend to backend and now its your chance to apply the logic by combining the components and utilities in a single function to make it work smoother and then apply that in between the server processing. ITS THE FUCKING LAST THING TO DO, SO COMPLETE IT! ASAP
+Hey tomorrow anshuman I want to tell you that you have to fix the photo sizwe problem through which the photo's cord is getting wrong, fix it using v0.dev
