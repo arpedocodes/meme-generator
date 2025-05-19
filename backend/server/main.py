@@ -1,14 +1,14 @@
 import sys
 import os
 import json
+from typing import List
 import cv2
 sys.path.append(os.path.join(os.getcwd(), "backend"))
 from components.memegenerator import meme_generator
 from utils.encode_image import encode_image
 from utils.place_text import put_text_in_rectangle
-from typing import List
 
-def get_meme(rectangled_image_path:str, original_image_path:str) -> List[str,str,str,str]:
+def get_meme(rectangled_image_path:str, original_image_path:str) -> List[str]:
 
     encoding = encode_image(rectangled_image_path)
     meme_texts = meme_generator(encoding)

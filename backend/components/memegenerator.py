@@ -27,7 +27,7 @@ def meme_generator(image_base64,n_meme:int=4):
                 "content": [
                     {
                         "type": "text",
-                        "text": f"Create a funny and relatable meme using this template. Each text box should feel like a real-life situation, dialogue, or inner thought. Match the tone of Gen Z humor — sarcastic, exaggerated, and meme-friendly. If there are multiple boxes, treat them like parts of a conversation or situation. The final line must deliver the punchline, preferably continuing or twisting the setup in a hilarious or unexpected way. Create {n_meme} memes. Your format must be in json format, and no preamble.",
+                        "text": f"Create a funny and relatable meme using this template. Each text box should feel like a real-life situation, dialogue, or inner thought. Match the tone of Gen Z humor — sarcastic, exaggerated, and meme-friendly. If there are multiple boxes, treat them like parts of a conversation or situation. The final line must deliver the punchline, preferably continuing or twisting the setup in a hilarious or unexpected way. Make sure each meme has the same number of lines as rectangles in the template, not more not less. Dont include the lines or text in the json that is already written on the image. Create {n_meme} memes. Your format must be in json format, and no preamble.",
                     },
                     {
                         "type": "image_url",

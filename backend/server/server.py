@@ -1,12 +1,14 @@
 from fastapi import FastAPI, File, UploadFile, Form
 from fastapi.responses import JSONResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
-from PIL import Image
 import os
 import shutil
 import uuid
 import json
-from main import get_meme
+import sys
+sys.path.append(os.path.join(os.getcwd(), "backend"))
+from .main import get_meme
+
 
 app = FastAPI()
 
@@ -31,7 +33,8 @@ async def receive_images(
     # Parse rectangle JSON data
     try:
         rect_data = json.loads(rectangleData)
-        with open("data/rectangleData.json", "w") as f:
+        print(rect_data)
+        with open(r"C:\AI EVO (Journey)\Ai Agents\meme-generator\backend\server\data\rectangleData.json", "w") as f:
             json.dump(rect_data, f)
     except json.JSONDecodeError:
         return JSONResponse(status_code=400, content={"error": "Invalid JSON for rectangleData"})
@@ -69,11 +72,11 @@ async def receive_images(
 @app.get("/output/{file_id}")
 async def get_data(file_id: str):
     # Check if the submission ID exists
-    if not os.path.exists(f"output/{file_id}"):
+    if not os.path.exists(fr"C:\AI EVO (Journey)\Ai Agents\meme-generator\backend\server\output\{file_id}"):
         return JSONResponse(status_code=404, content={"error": "Submission ID not found"})
 
     # Get the paths of the images
-    requested_image = f"output/{file_id}"
+    requested_image = fr"C:\AI EVO (Journey)\Ai Agents\meme-generator\backend\server\output\{file_id}"
 
     return FileResponse(
         path=requested_image,
