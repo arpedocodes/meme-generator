@@ -3,7 +3,7 @@ import os
 import json
 from typing import List
 import cv2  
-sys.path.append(os.path.join(os.getcwd(), "backend"))
+sys.path.append(os.path.join(os.getcwd(), "logic"))
 from components.memegenerator import meme_generator
 from utils.encode_image import encode_image
 from utils.place_text import put_text_in_rectangle
@@ -16,7 +16,7 @@ def get_meme(rectangled_image_path:str, original_image_path:str) -> List[str]:
     print(meme_json)
     meme_lines = [list(line.values()) for line in meme_json]
     org_img_array = cv2.imread(original_image_path)
-    rectangle_data_path = os.path.join(os.getcwd(), "backend","logic" ,"server", "data", "rectangleData.json")
+    rectangle_data_path = os.path.join(os.getcwd(),"logic" ,"server", "data", "rectangleData.json")
 
     output_image_path = []
 
@@ -31,7 +31,7 @@ def get_meme(rectangled_image_path:str, original_image_path:str) -> List[str]:
             bottom_right = tuple(int(v) for v in coords['rightBottom'].values())
             put_text_in_rectangle(org_img_array_copy, str(text).replace("’","\'"), top_left, bottom_right)
 
-        output_path = os.path.join(os.getcwd(), "backend", "logic" ,"server", "output", f"meme{idx}.png")
+        output_path = os.path.join(os.getcwd(),"logic" ,"server", "output", f"meme{idx}.png")
         output_image_path.append(output_path)
         cv2.imwrite(output_path, org_img_array_copy)
 
