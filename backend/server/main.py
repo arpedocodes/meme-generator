@@ -2,7 +2,7 @@ import sys
 import os
 import json
 from typing import List
-import cv2
+import cv2  
 sys.path.append(os.path.join(os.getcwd(), "backend"))
 from components.memegenerator import meme_generator
 from utils.encode_image import encode_image
