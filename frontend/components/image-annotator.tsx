@@ -444,7 +444,7 @@ export function ImageAnnotator() {
       formData.append("rectangleData", JSON.stringify(rectangleData))
 
       // Send to server
-      const response = await fetch("http://localhost:8000/meme", {
+      const response = await fetch("https://meme-generator-production-6131.up.railway.app/meme", {
         method: "POST",
         body: formData,
         signal: AbortSignal.timeout(10000), // 10 second timeout for production

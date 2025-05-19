@@ -42,22 +42,22 @@ export default function YourMemePage() {
         const imageObjects: MemeImage[] = [
           {
             id: "1",
-            url: `http://localhost:8000/${imagePaths[0]}`,
+            url: `https://meme-generator-production-6131.up.railway.app/${imagePaths[0]}`,
             title: "Annotated Image",
           },
           {
             id: "2",
-            url: `http://localhost:8000/${imagePaths[1]}`,
+            url: `https://meme-generator-production-6131.up.railway.app/${imagePaths[1]}`,
             title: "Original Image",
           },
           {
             id: "3",
-            url: `http://localhost:8000/${imagePaths[2]}`,
+            url: `https://meme-generator-production-6131.up.railway.app/${imagePaths[2]}`,
             title: "Processed Image 1",
           },
           {
             id: "4",
-            url: `http://localhost:8000/${imagePaths[3]}`,
+            url: `https://meme-generator-production-6131.up.railway.app/${imagePaths[3]}`,
             title: "Processed Image 2",
           },
         ]
