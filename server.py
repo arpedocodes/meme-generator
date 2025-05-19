@@ -5,8 +5,6 @@ import os
 import shutil
 import uuid
 import json
-import sys
-# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "backend")))
 from backend.server.main import get_meme
 
 
