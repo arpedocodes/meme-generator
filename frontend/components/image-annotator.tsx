@@ -1,15 +1,15 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useEffect, useRef, useState } from "react"
-import * as fabric from "fabric"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Upload, Send } from "lucide-react"
-import { EditPanel } from "./edit-panel"
-import { cn } from "@/lib/utils"
-import { useRouter } from "next/navigation"
+import { useEffect, useRef, useState } from "react";
+import * as fabric from "fabric";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Upload, Send } from "lucide-react";
+import { EditPanel } from "./edit-panel";
+import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 import {
   Dialog,
   DialogContent,
@@ -18,124 +18,124 @@ import {
   DialogTitle,
   DialogFooter,
   DialogClose,
-} from "@/components/ui/dialog"
-import { Alert, AlertDescription } from "@/components/ui/alert"
+} from "@/components/ui/dialog";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 // Define a custom type for our Fabric objects with data property
 interface CustomFabricObject extends fabric.Object {
   data?: {
-    id: string
-    type: string
-  }
+    id: string;
+    type: string;
+  };
 }
 
 // Define a custom type for our Fabric Group with data property
 interface CustomFabricGroup extends fabric.Group {
   data?: {
-    id: string
-    type: string
-  }
+    id: string;
+    type: string;
+  };
 }
 
 // Define the type for our rectangle objects
 type AnnotationRectangle = {
-  id: string
-  left: number
-  top: number
-  width: number
-  height: number
-  angle: number
-  fabricObject?: CustomFabricGroup
-}
+  id: string;
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+  angle: number;
+  fabricObject?: CustomFabricGroup;
+};
 
 export function ImageAnnotator() {
-  const router = useRouter()
-  const canvasRef = useRef<fabric.Canvas | null>(null)
-  const canvasContainerRef = useRef<HTMLDivElement>(null)
-  const fileInputRef = useRef<HTMLInputElement>(null)
-  const [imageLoaded, setImageLoaded] = useState(false)
-  const [originalImageUrl, setOriginalImageUrl] = useState<string | null>(null)
-  const [rectangles, setRectangles] = useState<AnnotationRectangle[]>([])
-  const [selectedRectId, setSelectedRectId] = useState<string | null>(null)
-  const [canvasSize, setCanvasSize] = useState({ width: 800, height: 600 })
-  const [errorDialogOpen, setErrorDialogOpen] = useState(false)
-  const [errorMessage, setErrorMessage] = useState("")
-  const [previewImageUrl, setPreviewImageUrl] = useState("")
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const router = useRouter();
+  const canvasRef = useRef<fabric.Canvas | null>(null);
+  const canvasContainerRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [originalImageUrl, setOriginalImageUrl] = useState<string | null>(null);
+  const [rectangles, setRectangles] = useState<AnnotationRectangle[]>([]);
+  const [selectedRectId, setSelectedRectId] = useState<string | null>(null);
+  const [canvasSize, setCanvasSize] = useState({ width: 800, height: 600 });
+  const [errorDialogOpen, setErrorDialogOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [previewImageUrl, setPreviewImageUrl] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Initialize the canvas
   useEffect(() => {
-    if (!canvasContainerRef.current) return
+    if (!canvasContainerRef.current) return;
 
     // Create a new canvas
     const canvas = new fabric.Canvas("annotation-canvas", {
       width: canvasSize.width,
       height: canvasSize.height,
       backgroundColor: "#f0f0f0",
-    })
+    });
 
-    canvasRef.current = canvas
+    canvasRef.current = canvas;
 
     // Handle selection events
     canvas.on("selection:created", (e) => {
-      const selectedObject = e.selected?.[0] as CustomFabricObject
+      const selectedObject = e.selected?.[0] as CustomFabricObject;
       if (selectedObject && selectedObject.data?.id) {
-        setSelectedRectId(selectedObject.data.id)
+        setSelectedRectId(selectedObject.data.id);
       }
-    })
+    });
 
     canvas.on("selection:updated", (e) => {
-      const selectedObject = e.selected?.[0] as CustomFabricObject
+      const selectedObject = e.selected?.[0] as CustomFabricObject;
       if (selectedObject && selectedObject.data?.id) {
-        setSelectedRectId(selectedObject.data.id)
+        setSelectedRectId(selectedObject.data.id);
       }
-    })
+    });
 
     canvas.on("selection:cleared", () => {
-      setSelectedRectId(null)
-    })
+      setSelectedRectId(null);
+    });
 
     // Handle object modifications
     canvas.on("object:modified", (e) => {
-      const modifiedObject = e.target as CustomFabricObject
+      const modifiedObject = e.target as CustomFabricObject;
       if (modifiedObject && modifiedObject.data?.id) {
-        updateRectangleFromCanvas(modifiedObject)
+        updateRectangleFromCanvas(modifiedObject);
       }
-    })
+    });
 
     // Handle object moving
     canvas.on("object:moving", (e) => {
-      const movingObject = e.target as CustomFabricObject
+      const movingObject = e.target as CustomFabricObject;
       if (movingObject && movingObject.data?.id) {
-        updateRectangleFromCanvas(movingObject)
+        updateRectangleFromCanvas(movingObject);
       }
-    })
+    });
 
     // Handle object scaling
     canvas.on("object:scaling", (e) => {
-      const scalingObject = e.target as CustomFabricObject
+      const scalingObject = e.target as CustomFabricObject;
       if (scalingObject && scalingObject.data?.id) {
-        updateRectangleFromCanvas(scalingObject)
+        updateRectangleFromCanvas(scalingObject);
       }
-    })
+    });
 
     // Handle object rotating
     canvas.on("object:rotating", (e) => {
-      const rotatingObject = e.target as CustomFabricObject
+      const rotatingObject = e.target as CustomFabricObject;
       if (rotatingObject && rotatingObject.data?.id) {
-        updateRectangleFromCanvas(rotatingObject)
+        updateRectangleFromCanvas(rotatingObject);
       }
-    })
+    });
 
     // Clean up
     return () => {
-      canvas.dispose()
-    }
-  }, [])
+      canvas.dispose();
+    };
+  }, []);
 
   // Update rectangle from canvas object
   const updateRectangleFromCanvas = (fabricObject: CustomFabricObject) => {
-    if (!fabricObject.data?.id) return
+    if (!fabricObject.data?.id) return;
 
     setRectangles((prevRectangles) => {
       return prevRectangles.map((rect) => {
@@ -147,46 +147,46 @@ export function ImageAnnotator() {
             width: fabricObject.getScaledWidth(),
             height: fabricObject.getScaledHeight(),
             angle: fabricObject.angle || 0,
-          }
+          };
         }
-        return rect
-      })
-    })
-  }
+        return rect;
+      });
+    });
+  };
 
   // Handle file upload
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file || !canvasRef.current) return
+    const file = e.target.files?.[0];
+    if (!file || !canvasRef.current) return;
 
-    const reader = new FileReader()
+    const reader = new FileReader();
     reader.onload = (event) => {
-      const imgUrl = event.target?.result as string
+      const imgUrl = event.target?.result as string;
 
       // Store the original image URL
-      setOriginalImageUrl(imgUrl)
+      setOriginalImageUrl(imgUrl);
 
       // Create a native Image object to get the actual dimensions
-      const img = new Image()
-      img.crossOrigin = "anonymous"
+      const img = new Image();
+      img.crossOrigin = "anonymous";
       img.onload = () => {
         // Clear the canvas
-        if (!canvasRef.current) return
+        if (!canvasRef.current) return;
 
-        canvasRef.current.clear()
-        setRectangles([])
-        setSelectedRectId(null)
+        canvasRef.current.clear();
+        setRectangles([]);
+        setSelectedRectId(null);
 
         // Resize the canvas to match the image dimensions
-        const imgWidth = img.width
-        const imgHeight = img.height
+        const imgWidth = img.width;
+        const imgHeight = img.height;
 
         // Update canvas size state
-        setCanvasSize({ width: imgWidth, height: imgHeight })
+        setCanvasSize({ width: imgWidth, height: imgHeight });
 
         // Resize the canvas to match the image dimensions
-        canvasRef.current.setWidth(imgWidth)
-        canvasRef.current.setHeight(imgHeight)
+        canvasRef.current.setWidth(imgWidth);
+        canvasRef.current.setHeight(imgHeight);
 
         // Create a fabric.Image object at original size (no scaling)
         const fabricImage = new fabric.Image(img, {
@@ -194,22 +194,22 @@ export function ImageAnnotator() {
           evented: false,
           left: 0,
           top: 0,
-        })
+        });
 
-        canvasRef.current.add(fabricImage)
-        canvasRef.current.renderAll()
-        setImageLoaded(true)
-      }
-      img.src = imgUrl
-    }
-    reader.readAsDataURL(file)
-  }
+        canvasRef.current.add(fabricImage);
+        canvasRef.current.renderAll();
+        setImageLoaded(true);
+      };
+      img.src = imgUrl;
+    };
+    reader.readAsDataURL(file);
+  };
 
   // Add a new rectangle
   const addRectangle = () => {
-    if (!canvasRef.current || !imageLoaded) return
+    if (!canvasRef.current || !imageLoaded) return;
 
-    const id = `rect_${Date.now()}`
+    const id = `rect_${Date.now()}`;
     const newRect: AnnotationRectangle = {
       id,
       left: 100,
@@ -217,16 +217,16 @@ export function ImageAnnotator() {
       width: 150,
       height: 80,
       angle: 0,
-    }
+    };
 
-    createFabricRectangle(newRect)
-    setRectangles((prev) => [...prev, newRect])
-    setSelectedRectId(id)
-  }
+    createFabricRectangle(newRect);
+    setRectangles((prev) => [...prev, newRect]);
+    setSelectedRectId(id);
+  };
 
   // Create a fabric rectangle
   const createFabricRectangle = (rect: AnnotationRectangle) => {
-    if (!canvasRef.current) return
+    if (!canvasRef.current) return;
 
     // Create the rectangle
     const fabricRect = new fabric.Rect({
@@ -239,7 +239,7 @@ export function ImageAnnotator() {
       strokeWidth: 2,
       rx: 5,
       ry: 5,
-    })
+    });
 
     // Group the rectangle
     const group = new fabric.Group([fabricRect], {
@@ -249,101 +249,111 @@ export function ImageAnnotator() {
       hasControls: true,
       hasBorders: true,
       lockScalingX: false,
-    }) as CustomFabricGroup
+    }) as CustomFabricGroup;
 
     // Add custom data to the group
-    group.data = { id: rect.id, type: "annotation" }
+    group.data = { id: rect.id, type: "annotation" };
 
-    canvasRef.current.add(group)
-    canvasRef.current.setActiveObject(group)
-    canvasRef.current.renderAll()
+    canvasRef.current.add(group);
+    canvasRef.current.setActiveObject(group);
+    canvasRef.current.renderAll();
 
     // Store the fabric object reference
     setRectangles((prevRects) =>
       prevRects.map((r) => {
         if (r.id === rect.id) {
-          return { ...r, fabricObject: group }
+          return { ...r, fabricObject: group };
         }
-        return r
-      }),
-    )
-  }
+        return r;
+      })
+    );
+  };
 
   // Update a rectangle
   const updateRectangle = (updatedRect: Partial<AnnotationRectangle>) => {
-    if (!selectedRectId || !canvasRef.current) return
+    if (!selectedRectId || !canvasRef.current) return;
 
     setRectangles((prevRects) => {
       const newRects = prevRects.map((rect) => {
         if (rect.id === selectedRectId) {
-          const updated = { ...rect, ...updatedRect }
+          const updated = { ...rect, ...updatedRect };
 
           // Find and update the fabric object
           const fabricObject = canvasRef.current
             ?.getObjects()
-            .find((obj) => (obj as CustomFabricObject).data?.id === selectedRectId) as CustomFabricGroup | undefined
+            .find(
+              (obj) => (obj as CustomFabricObject).data?.id === selectedRectId
+            ) as CustomFabricGroup | undefined;
 
           if (fabricObject) {
             // Update position and size
-            if (updatedRect.left !== undefined) fabricObject.set({ left: updatedRect.left })
-            if (updatedRect.top !== undefined) fabricObject.set({ top: updatedRect.top })
-            if (updatedRect.width !== undefined || updatedRect.height !== undefined) {
+            if (updatedRect.left !== undefined)
+              fabricObject.set({ left: updatedRect.left });
+            if (updatedRect.top !== undefined)
+              fabricObject.set({ top: updatedRect.top });
+            if (
+              updatedRect.width !== undefined ||
+              updatedRect.height !== undefined
+            ) {
               // Get the first object in the group (the rectangle)
-              const rect = fabricObject.getObjects()[0] as fabric.Rect
+              const rect = fabricObject.getObjects()[0] as fabric.Rect;
 
               if (updatedRect.width !== undefined) {
-                rect.set({ width: updatedRect.width })
+                rect.set({ width: updatedRect.width });
               }
 
               if (updatedRect.height !== undefined) {
-                rect.set({ height: updatedRect.height })
+                rect.set({ height: updatedRect.height });
               }
 
-              fabricObject.setCoords()
+              fabricObject.setCoords();
             }
 
-            if (updatedRect.angle !== undefined) fabricObject.set({ angle: updatedRect.angle })
+            if (updatedRect.angle !== undefined)
+              fabricObject.set({ angle: updatedRect.angle });
 
-            canvasRef.current?.renderAll()
+            canvasRef.current?.renderAll();
           }
 
-          return updated
+          return updated;
         }
-        return rect
-      })
+        return rect;
+      });
 
-      return newRects
-    })
-  }
+      return newRects;
+    });
+  };
 
   // Delete a rectangle
   const deleteRectangle = () => {
-    if (!selectedRectId || !canvasRef.current) return
+    if (!selectedRectId || !canvasRef.current) return;
 
     // Remove from canvas
     const objectToRemove = canvasRef.current
       .getObjects()
-      .find((obj) => (obj as CustomFabricObject).data?.id === selectedRectId)
+      .find((obj) => (obj as CustomFabricObject).data?.id === selectedRectId);
 
     if (objectToRemove) {
-      canvasRef.current.remove(objectToRemove)
-      canvasRef.current.renderAll()
+      canvasRef.current.remove(objectToRemove);
+      canvasRef.current.renderAll();
     }
 
     // Remove from state
-    setRectangles((prevRects) => prevRects.filter((rect) => rect.id !== selectedRectId))
-    setSelectedRectId(null)
-  }
+    setRectangles((prevRects) =>
+      prevRects.filter((rect) => rect.id !== selectedRectId)
+    );
+    setSelectedRectId(null);
+  };
 
   // Get canvas as image data URL
   const getCanvasImage = (): string | null => {
-    if (!canvasRef.current) return null
+    if (!canvasRef.current) return null;
 
     // Temporarily deselect any selected object to get a clean image
-    const activeObject = canvasRef.current.getActiveObject()
+    const activeObject = canvasRef.current.getActiveObject();
     if (activeObject) {
-      canvasRef.current.discardActiveObject()
-      canvasRef.current.renderAll()
+      canvasRef.current.discardActiveObject();
+      canvasRef.current.renderAll();
     }
 
     // Get the image data URL
@@ -351,31 +361,31 @@ export function ImageAnnotator() {
       format: "png",
       quality: 1,
       multiplier: 1, // Add this line to fix the TypeScript error
-    })
+    });
 
     // Restore selection if there was one
     if (activeObject) {
-      canvasRef.current.setActiveObject(activeObject)
-      canvasRef.current.renderAll()
+      canvasRef.current.setActiveObject(activeObject);
+      canvasRef.current.renderAll();
     }
 
-    return dataUrl
-  }
+    return dataUrl;
+  };
 
   // Convert data URL to Blob
   const dataURLtoBlob = (dataURL: string): Blob => {
-    const arr = dataURL.split(",")
-    const mime = arr[0].match(/:(.*?);/)?.[1] || "image/png"
-    const bstr = atob(arr[1])
-    let n = bstr.length
-    const u8arr = new Uint8Array(n)
+    const arr = dataURL.split(",");
+    const mime = arr[0].match(/:(.*?);/)?.[1] || "image/png";
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
 
     while (n--) {
-      u8arr[n] = bstr.charCodeAt(n)
+      u8arr[n] = bstr.charCodeAt(n);
     }
 
-    return new Blob([u8arr], { type: mime })
-  }
+    return new Blob([u8arr], { type: mime });
+  };
 
   // Calculate right-bottom coordinates for a rectangle
   const calculateRightBottom = (rect: AnnotationRectangle) => {
@@ -384,13 +394,13 @@ export function ImageAnnotator() {
     return {
       right: rect.left + rect.width,
       bottom: rect.top + rect.height,
-    }
-  }
+    };
+  };
 
   // Prepare rectangle data for submission
   const prepareRectangleData = () => {
     return rectangles.map((rect) => {
-      const rightBottom = calculateRightBottom(rect)
+      const rightBottom = calculateRightBottom(rect);
       return {
         id: rect.id,
         leftTop: {
@@ -404,58 +414,67 @@ export function ImageAnnotator() {
         width: rect.width,
         height: rect.height,
         angle: rect.angle,
-      }
-    })
-  }
+      };
+    });
+  };
 
   // Submit the images and rectangle data to the server
   const submitToServer = async () => {
-    if (!canvasRef.current || !imageLoaded || !originalImageUrl) return
+    if (!canvasRef.current || !imageLoaded || !originalImageUrl) return;
 
     if (rectangles.length === 0) {
-      setErrorMessage("Please add at least one rectangle before submitting.")
-      setErrorDialogOpen(true)
-      return
+      setErrorMessage("Please add at least one rectangle before submitting.");
+      setErrorDialogOpen(true);
+      return;
     }
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
 
     try {
       // Get the annotated image data URL
-      const annotatedImageDataUrl = getCanvasImage()
+      const annotatedImageDataUrl = getCanvasImage();
       if (!annotatedImageDataUrl) {
-        throw new Error("Could not capture the annotated image.")
+        throw new Error("Could not capture the annotated image.");
       }
 
       // Save the image URL for preview in case of error
-      setPreviewImageUrl(annotatedImageDataUrl)
+      setPreviewImageUrl(annotatedImageDataUrl);
 
       // Convert to blobs for sending
-      const annotatedImageBlob = dataURLtoBlob(annotatedImageDataUrl)
-      const originalImageBlob = dataURLtoBlob(originalImageUrl)
+      const annotatedImageBlob = dataURLtoBlob(annotatedImageDataUrl);
+      const originalImageBlob = dataURLtoBlob(originalImageUrl);
 
       // Prepare rectangle data
-      const rectangleData = prepareRectangleData()
+      const rectangleData = prepareRectangleData();
 
       // Create FormData and append the images and data
-      const formData = new FormData()
-      formData.append("annotatedImage", annotatedImageBlob, "annotated-image.png")
-      formData.append("originalImage", originalImageBlob, "original-image.png")
-      formData.append("rectangleData", JSON.stringify(rectangleData))
+      const formData = new FormData();
+      formData.append(
+        "annotatedImage",
+        annotatedImageBlob,
+        "annotated-image.png"
+      );
+      formData.append("originalImage", originalImageBlob, "original-image.png");
+      formData.append("rectangleData", JSON.stringify(rectangleData));
 
       // Send to server
-      const response = await fetch("https://meme-generator-production-6131.up.railway.app/meme", {
-        method: "POST",
-        body: formData,
-        signal: AbortSignal.timeout(10000), // 10 second timeout for production
-      })
+      const response = await fetch(
+        "https://meme-generator-production-6131.up.railway.app/meme",
+        {
+          method: "POST",
+          body: formData,
+          signal: AbortSignal.timeout(10000), // 10 second timeout for production
+        }
+      );
 
       if (!response.ok) {
-        throw new Error(`Server responded with status: ${response.status} - ${response.statusText}`)
+        throw new Error(
+          `Server responded with status: ${response.status} - ${response.statusText}`
+        );
       }
 
       // Parse the response
-      const responseData = await response.json()
+      const responseData = await response.json();
 
       // Validate the response data
       if (
@@ -464,46 +483,76 @@ export function ImageAnnotator() {
         !Array.isArray(responseData.data.images) ||
         responseData.data.images.length !== 4
       ) {
-        throw new Error("Invalid response from server. Expected an array of 4 image paths.")
+        throw new Error(
+          "Invalid response from server. Expected an array of 4 image paths."
+        );
       }
 
       // Store the image paths in sessionStorage to access them on the results page
-      sessionStorage.setItem("memeImages", JSON.stringify(responseData.data.images))
+      sessionStorage.setItem(
+        "memeImages",
+        JSON.stringify(responseData.data.images)
+      );
 
       // Navigate to the results page
-      router.push(`/your-meme`)
+      router.push(`/your-meme`);
     } catch (error) {
-      console.error("Error submitting data:", error)
-      setErrorMessage(error instanceof Error ? error.message : "Failed to submit data to server.")
-      setErrorDialogOpen(true)
+      console.error("Error submitting data:", error);
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Failed to submit data to server."
+      );
+      setErrorDialogOpen(true);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   // Get the selected rectangle
-  const selectedRectangle = rectangles.find((rect) => rect.id === selectedRectId)
+  const selectedRectangle = rectangles.find(
+    (rect) => rect.id === selectedRectId
+  );
 
   return (
     <div className="w-full flex flex-col lg:flex-row gap-6">
       <div className="flex-1">
         <Card className="p-4 mb-4">
           <div className="flex flex-wrap gap-2 mb-4">
-            <Button onClick={() => fileInputRef.current?.click()} className="flex items-center gap-2">
+            <Button
+              onClick={() => fileInputRef.current?.click()}
+              className="flex items-center gap-2"
+            >
               <Upload size={16} />
               Upload Image
             </Button>
-            <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
-            <Button onClick={addRectangle} disabled={!imageLoaded} variant="outline">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleFileUpload}
+            />
+            <Button
+              onClick={addRectangle}
+              disabled={!imageLoaded}
+              variant="outline"
+            >
               Add Rectangle
             </Button>
-            <Button onClick={deleteRectangle} disabled={!selectedRectId} variant="destructive">
+            <Button
+              onClick={deleteRectangle}
+              disabled={!selectedRectId}
+              variant="destructive"
+            >
               Delete Selected
             </Button>
             <div className="ml-auto">
               <Button
                 onClick={submitToServer}
-                disabled={!imageLoaded || rectangles.length === 0 || isSubmitting}
+                disabled={
+                  !imageLoaded || rectangles.length === 0 || isSubmitting
+                }
                 variant="default"
                 className="flex items-center gap-2"
               >
@@ -515,7 +564,7 @@ export function ImageAnnotator() {
                 ) : (
                   <>
                     <Send size={16} />
-                    Submit to Server
+                    Submit
                   </>
                 )}
               </Button>
@@ -525,7 +574,7 @@ export function ImageAnnotator() {
             ref={canvasContainerRef}
             className={cn(
               "border rounded-md overflow-auto bg-gray-100",
-              !imageLoaded && "flex items-center justify-center min-h-[400px]",
+              !imageLoaded && "flex items-center justify-center min-h-[400px]"
             )}
             style={{ maxHeight: "600px" }}
           >
@@ -541,7 +590,10 @@ export function ImageAnnotator() {
       </div>
 
       <div className="w-full lg:w-80">
-        <EditPanel rectangle={selectedRectangle} updateRectangle={updateRectangle} />
+        <EditPanel
+          rectangle={selectedRectangle}
+          updateRectangle={updateRectangle}
+        />
       </div>
 
       {/* Error Dialog */}
@@ -549,7 +601,9 @@ export function ImageAnnotator() {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Error</DialogTitle>
-            <DialogDescription>An error occurred while processing your request.</DialogDescription>
+            <DialogDescription>
+              An error occurred while processing your request.
+            </DialogDescription>
           </DialogHeader>
 
           <Alert variant="destructive">
@@ -564,5 +618,5 @@ export function ImageAnnotator() {
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }

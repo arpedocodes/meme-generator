@@ -43,22 +43,22 @@ export default function YourMemePage() {
           {
             id: "1",
             url: `https://meme-generator-production-6131.up.railway.app/${imagePaths[0]}`,
-            title: "Annotated Image",
+            title: "Meme 1",
           },
           {
             id: "2",
             url: `https://meme-generator-production-6131.up.railway.app/${imagePaths[1]}`,
-            title: "Original Image",
+            title: "Meme 2",
           },
           {
             id: "3",
             url: `https://meme-generator-production-6131.up.railway.app/${imagePaths[2]}`,
-            title: "Processed Image 1",
+            title: "Meme 3",
           },
           {
             id: "4",
             url: `https://meme-generator-production-6131.up.railway.app/${imagePaths[3]}`,
-            title: "Processed Image 2",
+            title: "Meme 4",
           },
         ]
 
