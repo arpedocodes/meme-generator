@@ -23,7 +23,11 @@ app.add_middleware(
 # Make sure data folder exists
 os.makedirs(os.path.join("backend","server","data"), exist_ok=True)
 
-@app.post("/")
+@app.get("/")
+async def root():
+    return {"message": "Welcome to the Meme Generator API!"}
+
+@app.post("/meme")
 async def receive_images(
     annotatedImage: UploadFile = File(...),
     originalImage: UploadFile = File(...),
@@ -32,7 +36,7 @@ async def receive_images(
     # Parse rectangle JSON data
     try:
         rect_data = json.loads(rectangleData)
-        print(rect_data)
+        # print(rect_data)
         with open(os.path.join("backend","server","data","rectangleData.json"), "w") as f:
             json.dump(rect_data, f)
     except json.JSONDecodeError:
