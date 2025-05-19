@@ -29,6 +29,14 @@ interface CustomFabricObject extends fabric.Object {
   }
 }
 
+// Define a custom type for our Fabric Group with data property
+interface CustomFabricGroup extends fabric.Group {
+  data?: {
+    id: string
+    type: string
+  }
+}
+
 // Define the type for our rectangle objects
 type AnnotationRectangle = {
   id: string
@@ -37,7 +45,7 @@ type AnnotationRectangle = {
   width: number
   height: number
   angle: number
-  fabricObject?: fabric.Group
+  fabricObject?: CustomFabricGroup
 }
 
 export function ImageAnnotator() {
@@ -163,37 +171,33 @@ export function ImageAnnotator() {
       img.crossOrigin = "anonymous"
       img.onload = () => {
         // Clear the canvas
-        canvasRef.current?.clear()
+        if (!canvasRef.current) return
+
+        canvasRef.current.clear()
         setRectangles([])
         setSelectedRectId(null)
 
-        // Create a fabric.Image object
-        const fabricImage = new fabric.Image(img, {
-          selectable: false,
-          evented: false,
-        })
-
-        // Calculate the scale to fit the image within the canvas
-        const canvasWidth = canvasRef.current?.getWidth() || 800
-        const canvasHeight = canvasRef.current?.getHeight() || 600
-
+        // Resize the canvas to match the image dimensions
         const imgWidth = img.width
         const imgHeight = img.height
 
-        const scaleX = canvasWidth / imgWidth
-        const scaleY = canvasHeight / imgHeight
-        const scale = Math.min(scaleX, scaleY)
+        // Update canvas size state
+        setCanvasSize({ width: imgWidth, height: imgHeight })
 
-        fabricImage.scale(scale)
+        // Resize the canvas to match the image dimensions
+        canvasRef.current.setWidth(imgWidth)
+        canvasRef.current.setHeight(imgHeight)
 
-        // Center the image
-        fabricImage.set({
-          left: (canvasWidth - imgWidth * scale) / 2,
-          top: (canvasHeight - imgHeight * scale) / 2,
+        // Create a fabric.Image object at original size (no scaling)
+        const fabricImage = new fabric.Image(img, {
+          selectable: false,
+          evented: false,
+          left: 0,
+          top: 0,
         })
 
-        canvasRef.current?.add(fabricImage)
-        canvasRef.current?.renderAll()
+        canvasRef.current.add(fabricImage)
+        canvasRef.current.renderAll()
         setImageLoaded(true)
       }
       img.src = imgUrl
@@ -245,7 +249,7 @@ export function ImageAnnotator() {
       hasControls: true,
       hasBorders: true,
       lockScalingX: false,
-    }) as CustomFabricObject
+    }) as CustomFabricGroup
 
     // Add custom data to the group
     group.data = { id: rect.id, type: "annotation" }
@@ -258,7 +262,7 @@ export function ImageAnnotator() {
     setRectangles((prevRects) =>
       prevRects.map((r) => {
         if (r.id === rect.id) {
-          return { ...r, fabricObject: group as unknown as fabric.Group }
+          return { ...r, fabricObject: group }
         }
         return r
       }),
@@ -277,15 +281,15 @@ export function ImageAnnotator() {
           // Find and update the fabric object
           const fabricObject = canvasRef.current
             ?.getObjects()
-            .find((obj) => (obj as CustomFabricObject).data?.id === selectedRectId) as CustomFabricObject
+            .find((obj) => (obj as CustomFabricObject).data?.id === selectedRectId) as CustomFabricGroup | undefined
 
           if (fabricObject) {
             // Update position and size
             if (updatedRect.left !== undefined) fabricObject.set({ left: updatedRect.left })
             if (updatedRect.top !== undefined) fabricObject.set({ top: updatedRect.top })
             if (updatedRect.width !== undefined || updatedRect.height !== undefined) {
-              const group = fabricObject as fabric.Group
-              const rect = group.getObjects()[0] as fabric.Rect
+              // Get the first object in the group (the rectangle)
+              const rect = fabricObject.getObjects()[0] as fabric.Rect
 
               if (updatedRect.width !== undefined) {
                 rect.set({ width: updatedRect.width })
@@ -295,7 +299,7 @@ export function ImageAnnotator() {
                 rect.set({ height: updatedRect.height })
               }
 
-              group.setCoords()
+              fabricObject.setCoords()
             }
 
             if (updatedRect.angle !== undefined) fabricObject.set({ angle: updatedRect.angle })
@@ -346,7 +350,7 @@ export function ImageAnnotator() {
     const dataUrl = canvasRef.current.toDataURL({
       format: "png",
       quality: 1,
-      multiplier: 1,
+      multiplier: 1, // Add this line to fix the TypeScript error
     })
 
     // Restore selection if there was one
@@ -520,9 +524,10 @@ export function ImageAnnotator() {
           <div
             ref={canvasContainerRef}
             className={cn(
-              "border rounded-md overflow-hidden bg-gray-100",
+              "border rounded-md overflow-auto bg-gray-100",
               !imageLoaded && "flex items-center justify-center min-h-[400px]",
             )}
+            style={{ maxHeight: "600px" }}
           >
             {!imageLoaded && (
               <div className="text-center p-8 text-gray-500">
