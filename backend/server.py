@@ -5,7 +5,7 @@ import os
 import shutil
 import uuid
 import json
-from backend.server.main import get_meme
+from logic.server.main import get_meme
 
 
 
