@@ -1,7 +1,6 @@
 import os
 from openai import OpenAI
 from dotenv import load_dotenv
-import json
 
 # Load environment variables from .env file
 load_dotenv()
@@ -52,10 +51,3 @@ def encode_image(image_path):
     with open(image_path, "rb") as image_file:
         encoded_string = base64.b64encode(image_file.read()).decode("utf-8")
     return encoded_string
-
-if __name__ == "__main__":
-    # Example usage
-    image_base64 = encode_image(r"C:\AI EVO (Journey)\Ai Agents\AI Meme generator\backend\server\data\eaf1a0d1-407c-4bdd-8fa8-86657c357d33_annotated.png")
-    meme_texts = meme_generator(image_base64)
-    obj = json.loads(meme_texts)
-    print(obj)

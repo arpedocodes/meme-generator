@@ -36,11 +36,3 @@ def get_meme(rectangled_image_path:str, original_image_path:str) -> List[str]:
         cv2.imwrite(output_path, org_img_array_copy)
 
     return output_image_path
-
-if __name__ == "__main__":
-    rectangled_image_path = r"C:\AI EVO (Journey)\Ai Agents\meme-generator\backend\server\data\375f3bb7-1e56-4eef-9ab9-994a6e294aa9_annotated.png"
-
-    original_image_path = r"C:\AI EVO (Journey)\Ai Agents\meme-generator\backend\server\data\375f3bb7-1e56-4eef-9ab9-994a6e294aa9_original.png"
-
-    meme_lines = get_meme(rectangled_image_path, original_image_path)
-    print(meme_lines)

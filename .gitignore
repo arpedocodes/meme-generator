@@ -135,6 +135,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+backend/components/jsonconverter.py
 
 # Spyder project settings
 .spyderproject

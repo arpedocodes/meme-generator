@@ -74,21 +74,3 @@ def put_text_in_rectangle(
         current_y += line_h + line_spacing
 
     return font_scale
-
-
-if __name__ == "__main__":
-    # Example usage
-    image = cv2.imread(r"C:\AI EVO (Journey)\Ai Agents\meme-generator\backend\server\data\375f3bb7-1e56-4eef-9ab9-994a6e294aa9_annotated.png")
-    put_text_in_rectangle(
-        image,
-        '''Me explaining why I' need to nap after doing absolutely nothing all day''',
-        (132, 111),
-        (313, 221),
-        text_color=(255, 0, 0),
-        stroke_color=(0, 255, 0),
-        thickness=2,
-        stroke_thickness=4,
-    )
-    cv2.imshow("Image with Text", image)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
