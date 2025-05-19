@@ -1,1 +1,1 @@
-Hey tomorrow anshuman I want to tell you that you have to fix the photo sizwe problem through which the photo's cord is getting wrong, fix it using v0.dev
+You need to add the main function to server file, and make the image appear on the website.

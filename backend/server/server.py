@@ -6,6 +6,7 @@ import os
 import shutil
 import uuid
 import json
+from main import get_meme
 
 app = FastAPI()
 
@@ -41,8 +42,6 @@ async def receive_images(
     # File paths
     annotated_path = f"data/{submission_id}_annotated.png"
     original_path = f"data/{submission_id}_original.png"
-    processed1_path = f"data/{submission_id}_processed1.png"
-    processed2_path = f"data/{submission_id}_processed2.png"
 
     # Save input images
     with open(annotated_path, "wb") as f:
@@ -51,33 +50,30 @@ async def receive_images(
     with open(original_path, "wb") as f:
         shutil.copyfileobj(originalImage.file, f)
 
-    # Open and do dummy processing (copy images)
-    img1 = Image.open(annotated_path)
-    img2 = Image.open(original_path)
+    paths = get_meme(annotated_path, original_path)
 
-    img1.save(processed1_path)
-    img2.save(processed2_path)
+    url = []
+    for path in paths:
+        # Move the output image to the output directory
+        output_path = os.path.join("output", os.path.basename(path))
+        url.append(output_path)
+
 
     # Respond with image paths
     return {
         "data": {
-            "images": [
-                annotated_path,
-                original_path,
-                processed1_path,
-                processed2_path
-            ]
+            "images": url,
         }
     }
 
-@app.get("/data/{file_id}")
+@app.get("/output/{file_id}")
 async def get_data(file_id: str):
     # Check if the submission ID exists
-    if not os.path.exists(f"data/{file_id}"):
+    if not os.path.exists(f"output/{file_id}"):
         return JSONResponse(status_code=404, content={"error": "Submission ID not found"})
 
     # Get the paths of the images
-    requested_image = f"data/{file_id}"
+    requested_image = f"output/{file_id}"
 
     return FileResponse(
         path=requested_image,
