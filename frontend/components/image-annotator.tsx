@@ -21,6 +21,9 @@ import {
 } from "@/components/ui/dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
+// Base URL for the meme-generator backend (was previously the Railway deployment URL)
+const API_BASE_URL = "http://127.0.0.1:8000";
+
 // Define a custom type for our Fabric objects with data property
 interface CustomFabricObject extends fabric.Object {
   data?: {
@@ -459,11 +462,11 @@ export function ImageAnnotator() {
 
       // Send to server
       const response = await fetch(
-        "https://meme-generator-production-6131.up.railway.app/meme",
+        `${API_BASE_URL}/meme`,
         {
           method: "POST",
           body: formData,
-          signal: AbortSignal.timeout(10000), // 10 second timeout for production
+          signal: AbortSignal.timeout(20000), // 10 second timeout for production
         }
       );
 
@@ -564,7 +567,7 @@ export function ImageAnnotator() {
                 ) : (
                   <>
                     <Send size={16} />
-                    Submit
+                    Submit 
                   </>
                 )}
               </Button>

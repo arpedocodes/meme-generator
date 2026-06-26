@@ -14,6 +14,8 @@ interface MemeImage {
   title: string
 }
 
+const API_BASE_URL = "http://127.0.0.1:8000"
+
 export default function YourMemePage() {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
@@ -42,22 +44,22 @@ export default function YourMemePage() {
         const imageObjects: MemeImage[] = [
           {
             id: "1",
-            url: `https://meme-generator-production-6131.up.railway.app/${imagePaths[0]}`,
+            url: `${API_BASE_URL}/${imagePaths[0]}`,
             title: "Meme 1",
           },
           {
             id: "2",
-            url: `https://meme-generator-production-6131.up.railway.app/${imagePaths[1]}`,
+            url: `${API_BASE_URL}/${imagePaths[1]}`,
             title: "Meme 2",
           },
           {
             id: "3",
-            url: `https://meme-generator-production-6131.up.railway.app/${imagePaths[2]}`,
+            url: `${API_BASE_URL}/${imagePaths[2]}`,
             title: "Meme 3",
           },
           {
             id: "4",
-            url: `https://meme-generator-production-6131.up.railway.app/${imagePaths[3]}`,
+            url: `${API_BASE_URL}/${imagePaths[3]}`,
             title: "Meme 4",
           },
         ]

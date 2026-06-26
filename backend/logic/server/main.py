@@ -3,10 +3,9 @@ import os
 import json
 from typing import List
 import cv2  
-sys.path.append(os.path.join(os.getcwd(), "logic"))
-from components.memegenerator import meme_generator
-from utils.encode_image import encode_image
-from utils.place_text import put_text_in_rectangle
+from logic.components.memegenerator import meme_generator
+from logic.utils.place_text import put_text_in_rectangle
+from logic.utils.encode_image import encode_image
 
 def get_meme(rectangled_image_path:str, original_image_path:str) -> List[str]:
 
