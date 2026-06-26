@@ -125,7 +125,7 @@ backend/
 ## ⬇️ Installation
 
 ```bash
-git clone https://github.com/your-username/meme-generator.git
+git clone https://github.com/arpedocodes/meme-generator.git
 cd meme-generator/backend
 pip install -r requirements.txt
 ```
